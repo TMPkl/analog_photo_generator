@@ -1,1 +1,7 @@
 *.jpg
+test.py
+*.zip
+*.png
+*.vscode
+
+media/*
