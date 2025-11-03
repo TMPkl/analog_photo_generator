@@ -1,7 +1,8 @@
-*.jpg
+/media/my_scans/*
+/media/scraped/*
 test.py
 *.zip
 *.png
 *.vscode
 
-media/*
+!media/tests/
