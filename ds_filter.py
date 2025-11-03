@@ -58,7 +58,7 @@ def underexposed_filter(image, threshold=0.03, pixel_value=5):
 def binned_histogram_analysis(image, num_bins=10, threshold=3, tolerance=5):
     if tolerance>num_bins or tolerance<1:
         raise ValueError("tolerance must be between 1 and num_bins")
-    
+
     bins = np.linspace(0, 256, num_bins + 1)
     hist_R, _ = np.histogram(image[:, :, 0], bins=bins)
     hist_G, _ = np.histogram(image[:, :, 1], bins=bins)
@@ -83,7 +83,7 @@ def binned_histogram_analysis(image, num_bins=10, threshold=3, tolerance=5):
 
 
 # ----------------------
-# Funkcja dla pojedynczego pliku
+# Funkcja dla pojedynczego pliku <- No way Karol ...Polish comments ??!!!
 # ----------------------
 def process_single_image(args):
     file_path, good_folder, bad_folder, gs_folder = args
@@ -133,7 +133,7 @@ def process_images_parallel(source_folder, good_folder, bad_folder, gs_folder, m
     files.sort()
 
     results = {"good": 0, "bad": 0, "skipped": 0, "gs": 0}
-    
+
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         for result in executor.map(process_single_image, [(f, good_folder, bad_folder, gs_folder) for f in files]):
             results[result] += 1
