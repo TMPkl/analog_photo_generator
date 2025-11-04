@@ -16,77 +16,55 @@ import argparse
 OUTPUT_DIR = "../media/tests/haliation/output/"
 
 
+def light_source_detection_hsv(HSVimg: np.ndarray, bright_threshold: int = 200) -> np.ndarray: #input HSV image space -> output HSV image space 
+    light_mask = cv.inRange(HSVimg, (0, 0, bright_threshold), (180, 255, 255))
+    light_sources = cv.bitwise_and(HSVimg, HSVimg, mask=light_mask)
+    cv.imwrite(OUTPUT_DIR + "LightSourcesDetected_HSV.jpg", cv.cvtColor(light_sources, cv.COLOR_HSV2BGR))
+    return light_sources
 
-def light_source_detection(img, bright_threshold=200):
-    # Make a copy
-    img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)  # convert to grayscale
-    # Threshold
-    _, thresh = cv.threshold(img_gray, bright_threshold, 255, cv.THRESH_BINARY)
-    cv.imwrite("../media/tests/haliation/output/ThresholdedImage.jpg", thresh)
 
-    output_img = cv.dilate(thresh, cv.getStructuringElement(cv.MORPH_ELLIPSE, (5, 5)), iterations=3)  # jeśli jest otoczony przez małe ciemne piksele, to je wypełnij jeżeli jest pojedyńczy piksel to go zwiększy
-    cv.imwrite("../media/tests/haliation/output/dilatedImage.jpg", output_img)
+def haliation_map_generator(img: np.ndarray, kernel_size:int = 31, sigmaX:int = 50, delta_mode: bool = False) -> np.ndarray:
 
-    # Find contours on the single-channel binary image
-    # contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-
-    # light_sources = []
-    # for cnt in contours:
-    #     area = cv.contourArea(cnt)
-    #     print(f"Contour area: {area}")
-    #     x, y, w, h = cv.boundingRect(cnt)
-    #     light_sources.append((x, y, w, h))
-
-    # # Draw contours on the original image for visualization
-    # output = img.copy()
-    # cv.drawContours(output, contours, -1, (0, 255, 0), 2)
-
-    output_path = OUTPUT_DIR + "detected_lights.jpg"
-    cv.imwrite(output_path, output_img)
-    print(f"Wynik zapisano do pliku: {output_path}")
-    return output_img
-
-def haliation_map_generator(image, kernel_size=5, sigmaX=5):
     """
-         test function, take image genereated by light_source_detection and create haliation map
+        input: image in HSV space with detected light sources
+        output: haliation map in BGR space
     """
-    haliation_map = cv.GaussianBlur(image, (kernel_size, kernel_size), sigmaX=sigmaX)
-    cv.imwrite(OUTPUT_DIR + "haliation_map.jpg", haliation_map)
-    return haliation_map
+
+    BGR_img = cv.cvtColor(img, cv.COLOR_HSV2BGR)
+    
+    for channel in range(3):
+        light_map = cv.GaussianBlur(BGR_img[:,:,channel], (kernel_size, kernel_size), sigmaX)
+        if delta_mode:
+            light_map = cv.subtract(light_map, BGR_img[:,:,channel])
+            light_map = cv.GaussianBlur(light_map, (3,3))
+        img[:,:,channel] = light_map # in BGR space
+
+    cv.imwrite(OUTPUT_DIR + "HaliationMap.jpg", img)
+
+    return img
 
 
-def add_heliation_effect(image, haliation_map, intensity=0.5):
+def add_heliation_effect(image: np.ndarray, haliation_map: np.ndarray, intensity: float = 0.5) -> np.ndarray:
     """
         function to add haliation effect to the original image using the haliation map
+        input: original image in BGR space, haliation map in BGR space, intensity of the effect
+        output: haliated image in BGR space
     """
-    # Ensure haliation_map is single channel
-    if len(haliation_map.shape) == 3:
-        haliation_map = cv.cvtColor(haliation_map, cv.COLOR_BGR2GRAY)
-
-    # Normalize haliation map to range [0, 1]
-    normalized_map = haliation_map / 255.0
-
-    # Expand dimensions to match image shape
-    if len(image.shape) == 3 and image.shape[2] == 3:
-        normalized_map = cv.merge([normalized_map]*3)
-
-    # Create haliated image
-    haliated_image = cv.addWeighted(image.astype(np.float32), 1.0, (normalized_map * intensity * 255).astype(np.float32), intensity, 0)
-    haliated_image = np.clip(haliated_image, 0, 255).astype(np.uint8)
-
-    output_path = OUTPUT_DIR + "final_output.jpg"
-    cv.imwrite(output_path, haliated_image)
-    print(f"Haliated image saved to: {output_path}")
+    haliated_image = np.zeros_like(image)
+    for channel in range(3):
+        haliated_image[:, :, channel] = cv.addWeighted(image[:, :, channel], 1.0, haliation_map[:, :, channel], intensity, 0)
+    
+    cv.imwrite(OUTPUT_DIR + "final_output.jpg", haliated_image)
+    print(f"Haliated image saved to: {OUTPUT_DIR + 'final_output.jpg'})")
     return haliated_image
-
-
+        
 if __name__ == "__main__":
     print("------- Light Source Detection -------\n")
     input_img_pth = "../media/tests/haliation/robert-tudor.jpg"
-    image = cv.imread(input_img_pth)
-    light_sources = light_source_detection(image, bright_threshold=210)
-    haliation_map = haliation_map_generator(light_sources, kernel_size=31, sigmaX=50)
-    haliated_image = add_heliation_effect(image, haliation_map, intensity=0.7)
+    img_HSV = cv.cvtColor(cv.imread(input_img_pth), cv.COLOR_BGR2HSV_FULL)
+    
+    ls = light_source_detection_hsv(img_HSV, bright_threshold=195)
+    hm = haliation_map_generator(ls, kernel_size=81, sigmaX=50, delta_mode=False) 
+    h_img = add_heliation_effect(cv.imread(input_img_pth), hm, intensity=1)
     print("------- Process Finished -------\n")
-    # cv.imshow("Detected Light Sources", light_sources)    # cv.waitKey(0)
-    # cv.destroyAllWindows()
+
