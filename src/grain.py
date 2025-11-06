@@ -3,6 +3,34 @@ import cv2 as cv
 import numpy as np
 
 
+def create_noise_texture():
+    grain_size = -1.2 #[-1.2 mam ale do wystestowania]
+    grain_strenght = 0.02 # need to find good range of values
+    max_grain_value = 5
+
+    img = cv.imread('media/tests/c.jpg', cv.IMREAD_GRAYSCALE)
+
+    grain_random = np.random.normal(128, 2, img.shape) # mapa szumu, srednio 128 szum jest std=8+ grain_strenght
+    grain_random_n = cv.normalize(grain_random, None, 0, 255, cv.NORM_MINMAX).astype(np.uint8) # normalizujemy do 0-255
+    cv.imwrite('media/tests/grain/grain_map_1.jpg', grain_random_n)
+
+    kernel = np.array([[1, 1, 1],
+                       [1, -8+grain_size, 1],
+                       [1, 1, 1]], dtype=np.float16)
+    
+
+
+    grain_map = cv.filter2D(grain_random_n, -1, kernel)
+
+    grain_map = cv.normalize(grain_map, None, 0, 255, cv.NORM_MINMAX).astype(np.uint8)        
+    
+    out = np.where(grain_map == 0, 127, grain_map * grain_random*grain_strenght).astype(np.uint8)
+    out = cv.GaussianBlur(out, (3, 3), 0)
+
+    cv.imwrite('media/tests/grain/photo_grain.jpg', out)
+    print(np.mean(out),np.std(out))
+    return out
+
 if __name__ == "__main__":
     bgr_color = [100, 150, 200]  # Example BGR color
     print(f"Original BGR color: {bgr_color}")
@@ -15,30 +43,7 @@ if __name__ == "__main__":
 
     print("------------------------------------------")
 
-    grain_size = -0.4 #[-0.4-0.15]
-    grain_strenght = 0.0 # need to find good range of values
-    max_grain_value = 5
-
-    img = cv.imread('media/tests/c.jpg', cv.IMREAD_GRAYSCALE)
-
-    grain_map = np.random.normal(128, 8 + grain_strenght, img.shape) # mapa szumu, srednio 128 szum jest std=8+ grain_strenght
-    grain_map = cv.normalize(grain_map, None, 0, 255, cv.NORM_MINMAX).astype(np.uint8) # normalizujemy do 0-255
-    cv.imwrite('media/tests/grain/grain_map_1.jpg', grain_map)
-    grain_map = cv.GaussianBlur(grain_map, (3, 3), 0)
-
-
-    kernel = np.array([[1, 1, 1],
-                       [1, -8+grain_size, 1],
-                       [1, 1, 1]], dtype=np.float16)
-    
-    grain_map = cv.filter2D(grain_map, -1, kernel)
-
-
-
-    grain_map = cv.normalize(grain_map, None, 0, 255, cv.NORM_MINMAX).astype(np.uint8)    
-    cv.imwrite('media/tests/grain/grain_map.jpg', grain_map)
-
-    grain_map = cv.normalize(grain_map, None, -max_grain_value, max_grain_value, cv.NORM_MINMAX)
+    create_noise_texture()
 
     # img = img.astype(np.float32) / 255.0
 
