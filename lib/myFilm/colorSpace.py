@@ -19,18 +19,12 @@ def BGR2XYZ(bgr, matrix=None):
             [0.0193339, 0.1191920, 0.9503041]
         ], dtype=np.float32)
 
-    # Jeżeli to obraz, zamieniamy kanały i przeliczamy każdy piksel
     if bgr.ndim == 3 and bgr.shape[2] == 3:
-        # BGR → RGB
         rgb = bgr[..., ::-1]
-        # (H, W, 3) → (H*W, 3)
         rgb_flat = rgb.reshape(-1, 3)
-        # mnożenie macierzy dla wszystkich pikseli
         xyz_flat = np.dot(rgb_flat, matrix.T)
-        # przywrócenie wymiarów
         xyz = xyz_flat.reshape(bgr.shape)
     else:
-        # pojedynczy piksel
         rgb = np.array([bgr[2], bgr[1], bgr[0]], dtype=np.float32)
         xyz = matrix.dot(rgb)
 
@@ -53,22 +47,15 @@ def XYZ2BGR(xyz, matrix=None):
             [ 0.0556434, -0.2040259,  1.0572252]
         ], dtype=np.float32)
 
-    # Jeśli obraz (H, W, 3)
     if xyz.ndim == 3 and xyz.shape[2] == 3:
-        # (H, W, 3) → (H*W, 3)
         xyz_flat = xyz.reshape(-1, 3)
-        # Mnożenie macierzy dla każdego piksela
         rgb_flat = np.dot(xyz_flat, matrix.T)
-        # Z powrotem do kształtu (H, W, 3)
         rgb = rgb_flat.reshape(xyz.shape)
-        # RGB → BGR
         bgr = rgb[..., ::-1]
     else:
-        # pojedynczy piksel
         rgb = matrix.dot(xyz)
         bgr = np.array([rgb[2], rgb[1], rgb[0]], dtype=np.float32)
 
-    # Ograniczenie i przeskalowanie
     bgr = np.clip(bgr, 0.0, 1.0)
     bgr = (bgr * 255).astype(np.uint8)
     return bgr

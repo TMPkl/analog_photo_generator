@@ -1,13 +1,3 @@
-'''
-    TO DO:
-    - color of light sources detection based on the color temperature
-    - haliation can not be stronger than the light
-    - haliation should not be present on the light source itself
-    - better haliation map generation (make it automatic parameters based on light density on the histogram)
-
-'''
-
-
 import cv2 as cv
 import numpy as np
 import os
