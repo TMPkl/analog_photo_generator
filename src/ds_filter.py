@@ -6,7 +6,7 @@ from concurrent.futures import ProcessPoolExecutor
 import shutil
 
 # ----------------------
-# Twoje funkcje filtrów
+# this script is for filtering images for data set purposes, probably not useful at the end
 # ----------------------
 def detect_grayscale(image, tolerance=10, max_ratio=0.05):
     """
