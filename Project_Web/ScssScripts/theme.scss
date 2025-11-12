@@ -1,0 +1,20 @@
+$primary: #4F1C51;
+$secondary: #210F37;
+$danger: #A55B4B;
+$success: #5b946e;
+$warning: #DCA06D;
+$body-bg: #f9f6f4;
+$body-color: #210F37;
+
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+
+body[data-bs-theme="dark"]
+{
+  --bs-body-bg: #1a1320;
+  --bs-body-color: #f0e6f6;
+  --bs-primary: #9c5ba3;
+  --bs-secondary: #38284d;
+  --bs-danger: #d1776a;
+  --bs-warning: #e3b179;
+  --bs-success: #88c9a1;
+}

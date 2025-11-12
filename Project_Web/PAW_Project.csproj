@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.15" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.15" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.15" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.15">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="MySql.Data" Version="9.3.0" />
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+      <PackageReference Include="RazorLight" Version="2.3.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Account\AccessDenied.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ForgotPassword.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ForgotPasswordConfirmation.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\Login.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\Register.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ResetPassword.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ResetPasswordConfirmation.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Admin\Panel.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\User\MyImages.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\User\Profile.cshtml" />
+    </ItemGroup>
+
+</Project>
