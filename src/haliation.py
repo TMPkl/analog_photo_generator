@@ -3,7 +3,7 @@ import numpy as np
 import os
 import argparse
 
-OUTPUT_DIR = "../media/tests/haliation/output/"
+OUTPUT_DIR = "media/tests/pipline/"
 
 
 def light_source_detection_hsv(HSVimg: np.ndarray, bright_threshold: int = 200) -> np.ndarray: #input HSV image space -> output HSV image space 
@@ -50,11 +50,11 @@ def add_heliation_effect(image: np.ndarray, haliation_map: np.ndarray, intensity
         
 if __name__ == "__main__":
     print("------- Light Source Detection -------\n")
-    input_img_pth = "../media/tests/haliation/robert-tudor.jpg"
+    input_img_pth = "media/tests/p2.jpg"
     img_HSV = cv.cvtColor(cv.imread(input_img_pth), cv.COLOR_BGR2HSV_FULL)
     
-    ls = light_source_detection_hsv(img_HSV, bright_threshold=195)
-    hm = haliation_map_generator(ls, kernel_size=81, sigmaX=50, delta_mode=False) 
-    h_img = add_heliation_effect(cv.imread(input_img_pth), hm, intensity=1)
+    ls = light_source_detection_hsv(img_HSV, bright_threshold=243) #threshold
+    hm = haliation_map_generator(ls, kernel_size=55, sigmaX=40, delta_mode=False)  # was
+    h_img = add_heliation_effect(cv.imread(input_img_pth), hm, intensity=0.1) #inensity
     print("------- Process Finished -------\n")
 
