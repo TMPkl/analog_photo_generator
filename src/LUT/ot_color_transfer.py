@@ -29,6 +29,13 @@ import ot
 import math
 import random
 from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from PIL import Image
+try:
+    from sklearn.cluster import MiniBatchKMeans
+    SKLEARN_AVAILABLE = True
+except Exception:
+    SKLEARN_AVAILABLE = False
 
 
 def sample_pixels_from_path(path: Path, max_samples=100000):
@@ -47,9 +54,22 @@ def sample_pixels_from_path(path: Path, max_samples=100000):
 
     per_image = max(1, max_samples // len(imgs))
     for p in tqdm(imgs, desc='Sampling images', unit='img'):
-        img = cv2.imread(str(p), cv2.IMREAD_COLOR)
+        img = None
+        try:
+            img = cv2.imread(str(p), cv2.IMREAD_COLOR)
+        except Exception:
+            img = None
         if img is None:
-            continue
+            # try Pillow fallback for problematic TIFFs or uncommon formats
+            try:
+                pil = Image.open(p)
+                pil = pil.convert('RGB')
+                img = cv2.cvtColor(np.array(pil), cv2.COLOR_RGB2BGR)
+            except Exception:
+                # could not read image; skip and continue
+                # print a short warning to stderr
+                print(f'Warning: failed to read {p}; skipping')
+                continue
         lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
         h, w, _ = lab.shape
         flat = lab.reshape((-1, 3))
@@ -80,6 +100,26 @@ def compute_kmeans(pixels: np.ndarray, k=256, attempts=8):
 
     # OpenCV kmeans expects float32 samples
     samples = pixels.reshape(-1, 3).astype(np.float32)
+
+    # If dataset is large and sklearn available, use MiniBatchKMeans for speed and progress
+    if SKLEARN_AVAILABLE and samples.shape[0] > 50000:
+        mbk = MiniBatchKMeans(n_clusters=k, batch_size=4096, random_state=42)
+        # iterate over shuffled chunks and partial_fit with progress
+        n = samples.shape[0]
+        batch = 10000
+        indices = np.arange(n)
+        np.random.shuffle(indices)
+        labels = np.empty((n,), dtype=np.int32)
+        for i in tqdm(range(0, n, batch), desc='MiniBatchKMeans', unit='batch'):
+            idx = indices[i:i+batch]
+            mbk.partial_fit(samples[idx])
+        centers = mbk.cluster_centers_.astype(np.float64)
+        # assign labels to compute weights
+        labels = mbk.predict(samples)
+        counts = np.bincount(labels, minlength=k).astype(np.float64)
+        weights = counts / counts.sum()
+        return centers, weights, labels
+
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)
     flags = cv2.KMEANS_RANDOM_CENTERS
     compactness, labels, centers = cv2.kmeans(samples, k, None, criteria, attempts, flags)
@@ -177,12 +217,9 @@ def write_cube_file(out_cube: str, centers_src: np.ndarray, mapped_centers: np.n
     bgr = bgr.reshape((-1, 1, 3))
     lab = cv2.cvtColor(bgr, cv2.COLOR_BGR2LAB).reshape((-1, 3)).astype(np.float64)
 
-    # find nearest source center per grid Lab point
-    # compute distances (N, k)
+    # compute distances (N, k) in Lab space and use nearest-centroid mapping (hard assignment)
     d = np.linalg.norm(lab[:, None, :] - centers_src[None, :, :], axis=2)
     idx = np.argmin(d, axis=1)
-
-    # mapped_centers are in Lab; convert each mapped Lab to RGB via OpenCV
     mapped_lab = mapped_centers[idx]
     mapped_lab_uint8 = np.clip(mapped_lab, 0, 255).astype(np.uint8)
     mapped_lab_uint8 = mapped_lab_uint8.reshape((-1, 1, 3))
@@ -217,9 +254,16 @@ def main():
     tgt_path = Path(args.target)
     cube_out = args.cube_out
 
-    print('Sampling pixels...')
-    src_pixels = sample_pixels_from_path(src_path, max_samples=args.samples)
-    tgt_pixels = sample_pixels_from_path(tgt_path, max_samples=args.samples)
+    print('Sampling pixels from A and B in parallel...')
+    # run sampling for source and target in parallel to overlap I/O and CPU
+    with ThreadPoolExecutor(max_workers=2) as exe:
+        fut_src = exe.submit(sample_pixels_from_path, src_path, args.samples)
+        fut_tgt = exe.submit(sample_pixels_from_path, tgt_path, args.samples)
+        # show small progress bar while both tasks complete
+        for _ in tqdm(as_completed([fut_src, fut_tgt]), total=2, desc='Sampling sets', unit='set'):
+            pass
+        src_pixels = fut_src.result()
+        tgt_pixels = fut_tgt.result()
 
     if src_pixels.shape[0] == 0:
         print('No source pixels found in folder. Exiting.')
