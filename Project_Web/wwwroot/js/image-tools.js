@@ -75,31 +75,98 @@ document.querySelectorAll('.tool-card').forEach(card => {
 
 const TOOL_INPUTS_CONFIG =
     {
-        2: [
+        1:
+        [
             {
-                name: 'tool_input_color_space',
-                label: 'Resulting color space',
-                type: 'select',
-                options: {"Gray": "GRAY", "HSV": "HSV", "RGB": "BGR"},
-                flag: "",
+                name: 'tool_input_scales',
+                label: 'Noise Scales (space-separated floats)',
+                initial_value: '1 0.2 0.4', 
+                type: 'text',
+                flag: '--scale'
+            },
+            {
+                name: 'tool_input_intensity',
+                label: 'Intensity (float)',
+                initial_value: 0.4,
+                type: 'number',
+                flag: '--intensity'
+            },
+            {
+                name: 'tool_input_grain_amplitude',
+                label: 'Grain Amplitude (float)',
+                initial_value: 0.18,
+                type: 'number',
+                flag: '--grain_amplitude'
             }
         ],
-        6: [
+        2:
+        [
             {
-                name: 'tool_input_width',
-                label: "Resulting width",
+                name: 'tool_input_bright_threshold',
+                label: 'Brightness Threshold (0-255)',
                 type: 'number',
-                options: {'min': 1},
-                flag: "-w"
+                options: {'min': 0, 'max': 255},
+                initial_value: 243,
+                flag: "--bright_threshold",
             },
             {
-                name: 'tool_input_height',
-                label: "Resulting height",
+                name: 'tool_input_kernel_size',
+                label: 'Halation Map Kernel Size',
                 type: 'number',
-                options: {'min': 1},
-                flag: "-H"
+                options: {'min': 0},
+                initial_value: 55,
+                flag: "--kernel_size",
             },
+            {
+                name: 'tool_input_sigma_x',
+                label: 'Halation Map Sigma X',
+                type: 'number',
+                options: {'min': 0},
+                initial_value: 40,
+                flag: "--sigma_x",
+            },
+            {
+                name: 'tool_input_delta_mode',
+                label: 'Halation Map Delta Mode',
+                type: 'select',
+                options: {'Yes': 1, "No": 0},
+                flag: "--delta_mode",
+            },
+            {
+                name: 'tool_input_intensity',
+                label: 'Halation Intensity',
+                type: 'number',
+                options: {'min': 0},
+                initial_value: 0.1,
+                flag: "--intensity",
+            },
+            
         ]
+        // 2: [
+        //     {
+        //         name: 'tool_input_color_space',
+        //         label: 'Resulting color space',
+        //         type: 'select',
+        //         options: {"Gray": "GRAY", "HSV": "HSV", "RGB": "BGR"},
+        //         flag: "",
+        //     }
+        // ],
+        // 6: [
+        //     {
+        //         name: 'tool_input_width',
+        //         label: "Resulting width",
+        //         type: 'number',
+        //         options: {'min': 1},
+        //         flag: "-w"
+        //     },
+        //     {
+        //         name: 'tool_input_height',
+        //         label: "Resulting height",
+        //         type: 'number',
+        //         options: {'min': 1},
+        //         flag: "-H"
+        //     },
+        // ]
     }
 
 function onCardClick()
@@ -152,11 +219,29 @@ function onAfterCardShowForm(toolId, fileId)
                 inputNumber.setAttribute('name', inputData.name);
                 inputNumber.id = inputData.name;
                 
-                if('min' in inputData.options)
-                    inputNumber.setAttribute('min', inputData.min);
+                if(inputData.options && 'min' in inputData.options)
+                    inputNumber.setAttribute('min', inputData.options.min);
+                
+                if(inputData.options && 'max' in inputData.options)
+                    inputNumber.setAttribute('max', inputData.options.max);
+
+                if(inputData.initial_value)
+                    inputNumber.setAttribute('value', inputData.initial_value);
                 
                 inputWrapper.appendChild(inputNumber);
                 break;
+                
+            case 'text':
+            let inputText = document.createElement('input');
+            inputText.classList.add('form-control');
+            inputText.setAttribute('type', 'text');
+            inputText.setAttribute('name', inputData.name);
+            if(inputData.initial_value)
+                inputText.setAttribute('value', inputData.initial_value);
+            inputText.id = inputData.name;
+            
+            inputWrapper.appendChild(inputText);
+            break;
                 
             case 'select':
                 let inputSelect = document.createElement('select');
