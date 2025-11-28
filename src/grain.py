@@ -1,6 +1,7 @@
 import argparse
 import os
 import json
+import re
 import cv2 as cv
 import numpy as np
 
@@ -34,11 +35,35 @@ def add_multiscale_grain(image, scales=(1, 0.2, 0.4, ), intensity=0.4, grain_amp
     return (blended * 255).astype(np.uint8)
 
 
+class Scales:
+    def __init__(self, values):
+        self.values = tuple(float(v) for v in values)
+
+    @classmethod
+    def from_string(cls, s: str):
+        # split by commas and/or whitespace
+        parts = [p for p in re.split(r"[,\s]+", s.strip()) if p != ""]
+        return cls(parts)
+
+    def __iter__(self):
+        return iter(self.values)
+
+    def __len__(self):
+        return len(self.values)
+
+    def __repr__(self):
+        return f"Scales({self.values})"
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Add multiscale grain to an image (expects BGR input). The script converts to HLS, adds grain and saves output.")
-    parser.add_argument("input", help="Input image path")
-    parser.add_argument("output", nargs="?", default="media/tests/grain/esa_multiscale_grain.jpg", help="Output image path")
-    parser.add_argument("--scales", type=float, nargs="+", default=[1, 0.2, 0.4], help="Scales for multiscale noise (space-separated floats)")
+    parser.add_argument("-input", help="Input image path")
+    parser.add_argument("-output", nargs="?", default="media/tests/grain/esa_multiscale_grain.jpg", help="Output image path")
+    # Example usages:
+    # --scale 1 0.2 0.4
+    # --scale "1, 0.2, 0.4"
+    # Also accepts a single comma/space-separated string for backward compatibility.
+    parser.add_argument("--scale", nargs='+', default="1 0.2 0.4", help="Scales for multiscale noise: eg. '1 0.2 0.4' or '1,0.2,0.4'")
     parser.add_argument("--intensity", type=float, default=0.4, help="Blend intensity for the grain")
     parser.add_argument("--grain_amplitude", type=float, default=0.18, help="Standard deviation for gaussian noise at each scale")
 
@@ -51,7 +76,13 @@ if __name__ == "__main__":
     # convert to HLS as function expects HLS input
     img_hls = cv.cvtColor(img, cv.COLOR_BGR2HLS_FULL)
 
-    multiscale_grainy_img = add_multiscale_grain(img_hls, scales=tuple(args.scales), intensity=args.intensity, grain_amplitude=args.grain_amplitude)
+    # parse scales: support both a list of values (unquoted usage) and a single string
+    if isinstance(args.scale, str):
+        scales_obj = Scales.from_string(args.scale)
+    else:
+        # argparse will produce a list when nargs='+' is used; ensure floats
+        scales_obj = Scales(args.scale)
+    multiscale_grainy_img = add_multiscale_grain(img_hls, scales=scales_obj, intensity=args.intensity, grain_amplitude=args.grain_amplitude)
 
     # convert back to BGR for saving
     saved = cv.cvtColor(multiscale_grainy_img, cv.COLOR_HLS2BGR_FULL)
