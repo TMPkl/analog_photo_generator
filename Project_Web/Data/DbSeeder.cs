@@ -14,6 +14,8 @@ public static class DbSeeder
         var toolsToSeed = new List<ImageTool>
         {
             new ImageTool { Name = "Grain Generator", Description = "Add multiscale grain to an image (expects BGR input). The script converts to HLS, adds grain and saves output.", ScriptPath = "PythonScripts/grain.py" },
+            new ImageTool { Name = "Halation Generator", Description = "Detect bright light sources and add halation (halo) effect.", ScriptPath = "PythonScripts/haliation.py" },
+
         };
 
         foreach (var tool in toolsToSeed)
