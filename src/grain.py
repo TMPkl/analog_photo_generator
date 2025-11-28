@@ -58,7 +58,7 @@ class Scales:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Add multiscale grain to an image (expects BGR input). The script converts to HLS, adds grain and saves output.")
     parser.add_argument("-input", help="Input image path")
-    parser.add_argument("-output", nargs="?", default="media/tests/grain/esa_multiscale_grain.jpg", help="Output image path")
+    parser.add_argument("-output", nargs="?", default="media/tests/grainy.jpg", help="Output image path")
     # Example usages:
     # --scale 1 0.2 0.4
     # --scale "1, 0.2, 0.4"
@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     img = cv.imread(args.input)
     if img is None:
-        raise FileNotFoundError(f"Nie znaleziono obrazu: {args.input}")
+        raise FileNotFoundError(f"No input file was found: {args.input}")
 
     # convert to HLS as function expects HLS input
     img_hls = cv.cvtColor(img, cv.COLOR_BGR2HLS_FULL)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     ok = cv.imwrite(abs_output, saved)
     if not ok:
-        raise IOError(f"Nie udało się zapisać pliku: {abs_output}")
+        raise IOError(f"Failed to save file: {abs_output}")
 
     result = {
         "filename": os.path.basename(abs_output),
