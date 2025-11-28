@@ -23,7 +23,7 @@ def add_multiscale_grain(image, scales=(1, 0.2, 0.4, ), intensity=0.4, grain_amp
 
     total_noise /= len(scales)
     total_noise = cv.GaussianBlur(total_noise, (3, 3), 0)
-    cv.imwrite("media/tests/grain/esa_multiscale_noise.jpg", cv.cvtColor((total_noise * 255).astype(np.uint8), cv.COLOR_HLS2BGR_FULL))
+    #cv.imwrite("media/tests/grain/esa_multiscale_noise.jpg", cv.cvtColor((total_noise * 255).astype(np.uint8), cv.COLOR_HLS2BGR_FULL))
 
     chanel_scale = np.array([0.2, 0.6, 2.3], dtype=np.float32).reshape(1, 1, 3) ##hardcoded but it makes the most sense, different values do not look good
     total_noise *= chanel_scale
@@ -56,9 +56,16 @@ class Scales:
 
 
 if __name__ == "__main__":
+
+
+    # create output folder if not exists
+    working_directory = os.getcwd()
+    folder_name = os.path.join(working_directory, "wwwroot")
+    folder_name = os.path.join(folder_name, "output_grain")
+    os.makedirs(folder_name, exist_ok=True)
+
     parser = argparse.ArgumentParser(description="Add multiscale grain to an image (expects BGR input). The script converts to HLS, adds grain and saves output.")
-    parser.add_argument("-input", help="Input image path")
-    parser.add_argument("-output", nargs="?", default="media/tests/grainy.jpg", help="Output image path")
+    parser.add_argument("input_path", help="Input image path")
     # Example usages:
     # --scale 1 0.2 0.4
     # --scale "1, 0.2, 0.4"
@@ -69,9 +76,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    img = cv.imread(args.input)
+    image_path = args.input_path
+    output_path = folder_name + '/' + os.path.basename(image_path).split('.')[0] + "_" + "-".join(args.scale) + "_" + str(args.intensity) + "_" + str(args.grain_amplitude) + ".png"
+
+    img = cv.imread(image_path)
     if img is None:
-        raise FileNotFoundError(f"No input file was found: {args.input}")
+        raise FileNotFoundError(f"No input file was found: {image_path}")
 
     # convert to HLS as function expects HLS input
     img_hls = cv.cvtColor(img, cv.COLOR_BGR2HLS_FULL)
@@ -82,21 +92,17 @@ if __name__ == "__main__":
     else:
         # argparse will produce a list when nargs='+' is used; ensure floats
         scales_obj = Scales(args.scale)
+        
     multiscale_grainy_img = add_multiscale_grain(img_hls, scales=scales_obj, intensity=args.intensity, grain_amplitude=args.grain_amplitude)
 
     # convert back to BGR for saving
     saved = cv.cvtColor(multiscale_grainy_img, cv.COLOR_HLS2BGR_FULL)
 
-    abs_output = os.path.abspath(args.output)
-    out_dir = os.path.dirname(abs_output)
-    if out_dir:
-        os.makedirs(out_dir, exist_ok=True)
-
-    ok = cv.imwrite(abs_output, saved)
+    ok = cv.imwrite(output_path, saved)
     if not ok:
-        raise IOError(f"Failed to save file: {abs_output}")
+        raise IOError(f"Failed to save file: {output_path}")
 
     result = {
-        "filename": os.path.basename(abs_output),
+        "filename": os.path.basename(output_path),
     }
     print(json.dumps(result))
