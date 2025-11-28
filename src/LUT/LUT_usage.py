@@ -21,6 +21,7 @@ import numpy as np
 from PIL import Image
 import math
 import os
+import json
 
 
 def parse_cube(path: Path):
@@ -139,33 +140,36 @@ def apply_3d_lut(image: np.ndarray, lut: np.ndarray):
 
 
 def process_path(in_path: Path, out_path: Path, lut: np.ndarray):
+	written = []
 	if in_path.is_dir():
 		out_path.mkdir(parents=True, exist_ok=True)
 		imgs = [p for p in sorted(in_path.iterdir()) if p.suffix.lower() in ('.jpg', '.jpeg', '.png', '.tif', '.tiff', '.bmp')]
 		if not imgs:
 			print('No supported images found in', in_path)
-			return
+			return written
 		for p in imgs:
 			dst = out_path / p.name
 			try:
 				img = np.array(Image.open(p).convert('RGB'))
 				out = apply_3d_lut(img, lut)
 				Image.fromarray(out).save(dst)
-				print('Wrote', dst)
+				written.append(dst)
 			except Exception as e:
-				print('Failed', p, e)
+				print('Failed', p, e, file=sys.stderr)
 	else:
 		out_path.parent.mkdir(parents=True, exist_ok=True)
 		img = np.array(Image.open(in_path).convert('RGB'))
 		out = apply_3d_lut(img, lut)
 		Image.fromarray(out).save(out_path)
-		print('Wrote', out_path)
+		written.append(out_path)
+
+	return written
 
 
 def main():
 	parser = argparse.ArgumentParser(description='Apply 3D LUT (.cube) to image or folder')
 	parser.add_argument('--in', dest='in_path', required=True, help='Input image or folder')
-	parser.add_argument('--lut', required=True, help='Path to .cube LUT file')
+	parser.add_argument('--lut', required=True,default="src/LUT/out.cube" ,help='Path to .cube LUT file')
 	parser.add_argument('--out', required=True, help='Output image or folder')
 	parser.add_argument('--swap-channels', action='store_true', help='Swap LUT channels from RGB->BGR if colors look off')
 	args = parser.parse_args()
@@ -183,7 +187,16 @@ def main():
 	if args.swap_channels:
 		lut = lut[..., ::-1]
 
-	process_path(in_path, out_path, lut)
+	written = process_path(in_path, out_path, lut)
+	# prepare JSON result listing basenames of written files
+	if not written:
+		# nothing written (or error printed earlier)
+		sys.exit(1)
+
+	# Normalize to absolute paths then basenames
+	basenames = [os.path.basename(str(p)) for p in written]
+	result = {"filenames": basenames}
+	print(json.dumps(result))
 
 
 if __name__ == '__main__':
