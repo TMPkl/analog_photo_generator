@@ -75,31 +75,55 @@ document.querySelectorAll('.tool-card').forEach(card => {
 
 const TOOL_INPUTS_CONFIG =
     {
-        2: [
+        1:
+        [
             {
-                name: 'tool_input_color_space',
-                label: 'Resulting color space',
-                type: 'select',
-                options: {"Gray": "GRAY", "HSV": "HSV", "RGB": "BGR"},
-                flag: "",
+                name: 'tool_input_scales',
+                label: 'Noise Scales (space-separated floats)',
+                initial_value: '1 0.2 0.4', 
+                type: 'text',
+                flag: '--scale'
+            },
+            {
+                name: 'tool_input_intensity',
+                label: 'Intensity (float)',
+                initial_value: 0.4,
+                type: 'number',
+                flag: '--intensity'
+            },
+            {
+                name: 'tool_input_grain_amplitude',
+                label: 'Grain Amplitude (float)',
+                initial_value: 0.18,
+                type: 'number',
+                flag: '--grain_amplitude'
             }
-        ],
-        6: [
-            {
-                name: 'tool_input_width',
-                label: "Resulting width",
-                type: 'number',
-                options: {'min': 1},
-                flag: "-w"
-            },
-            {
-                name: 'tool_input_height',
-                label: "Resulting height",
-                type: 'number',
-                options: {'min': 1},
-                flag: "-H"
-            },
         ]
+        // 2: [
+        //     {
+        //         name: 'tool_input_color_space',
+        //         label: 'Resulting color space',
+        //         type: 'select',
+        //         options: {"Gray": "GRAY", "HSV": "HSV", "RGB": "BGR"},
+        //         flag: "",
+        //     }
+        // ],
+        // 6: [
+        //     {
+        //         name: 'tool_input_width',
+        //         label: "Resulting width",
+        //         type: 'number',
+        //         options: {'min': 1},
+        //         flag: "-w"
+        //     },
+        //     {
+        //         name: 'tool_input_height',
+        //         label: "Resulting height",
+        //         type: 'number',
+        //         options: {'min': 1},
+        //         flag: "-H"
+        //     },
+        // ]
     }
 
 function onCardClick()
@@ -152,11 +176,26 @@ function onAfterCardShowForm(toolId, fileId)
                 inputNumber.setAttribute('name', inputData.name);
                 inputNumber.id = inputData.name;
                 
-                if('min' in inputData.options)
+                if(inputData.options && 'min' in inputData.options)
                     inputNumber.setAttribute('min', inputData.min);
+
+                if(inputData.initial_value)
+                    inputNumber.setAttribute('value', inputData.initial_value);
                 
                 inputWrapper.appendChild(inputNumber);
                 break;
+                
+            case 'text':
+            let inputText = document.createElement('input');
+            inputText.classList.add('form-control');
+            inputText.setAttribute('type', 'text');
+            inputText.setAttribute('name', inputData.name);
+            if(inputData.initial_value)
+                inputText.setAttribute('value', inputData.initial_value);
+            inputText.id = inputData.name;
+            
+            inputWrapper.appendChild(inputText);
+            break;
                 
             case 'select':
                 let inputSelect = document.createElement('select');

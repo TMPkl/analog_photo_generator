@@ -10,9 +10,10 @@
   <component name="ChangeListManager">
     <list default="true" id="425d1240-5c2c-4352-ac48-56504f202408" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PAW_Project/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PAW_Project/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/Home/Privacy.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Views/Home/Privacy.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/Shared/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Views/Shared/_Layout.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wwwroot/js/theme-switcher.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/DbSeeder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Data/DbSeeder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PAW_Project.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PAW_Project.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PythonScripts/grain.py" beforeDir="false" afterPath="$PROJECT_DIR$/PythonScripts/grain.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wwwroot/js/image-tools.js" beforeDir="false" afterPath="$PROJECT_DIR$/wwwroot/js/image-tools.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,21 +34,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.PAW_Project: http.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;import-web-project&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.PAW_Project: http.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "setup-web",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.PAW_Project: http">
     <configuration name="PAW_Project: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/PAW_Project.csproj" />
@@ -91,6 +92,7 @@
       <workItem from="1762938254410" duration="2271000" />
       <workItem from="1762942471580" duration="350000" />
       <workItem from="1762944688354" duration="314000" />
+      <workItem from="1764366482554" duration="1405000" />
     </task>
     <servers />
   </component>
