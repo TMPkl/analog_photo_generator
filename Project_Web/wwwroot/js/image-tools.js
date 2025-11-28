@@ -98,6 +98,49 @@ const TOOL_INPUTS_CONFIG =
                 type: 'number',
                 flag: '--grain_amplitude'
             }
+        ],
+        2:
+        [
+            {
+                name: 'tool_input_bright_threshold',
+                label: 'Brightness Threshold (0-255)',
+                type: 'number',
+                options: {'min': 0, 'max': 255},
+                initial_value: 243,
+                flag: "--bright_threshold",
+            },
+            {
+                name: 'tool_input_kernel_size',
+                label: 'Halation Map Kernel Size',
+                type: 'number',
+                options: {'min': 0},
+                initial_value: 55,
+                flag: "--kernel_size",
+            },
+            {
+                name: 'tool_input_sigma_x',
+                label: 'Halation Map Sigma X',
+                type: 'number',
+                options: {'min': 0},
+                initial_value: 40,
+                flag: "--sigma_x",
+            },
+            {
+                name: 'tool_input_delta_mode',
+                label: 'Halation Map Delta Mode',
+                type: 'select',
+                options: {'Yes': 1, "No": 0},
+                flag: "--delta_mode",
+            },
+            {
+                name: 'tool_input_intensity',
+                label: 'Halation Intensity',
+                type: 'number',
+                options: {'min': 0},
+                initial_value: 0.1,
+                flag: "--intensity",
+            },
+            
         ]
         // 2: [
         //     {
@@ -177,7 +220,10 @@ function onAfterCardShowForm(toolId, fileId)
                 inputNumber.id = inputData.name;
                 
                 if(inputData.options && 'min' in inputData.options)
-                    inputNumber.setAttribute('min', inputData.min);
+                    inputNumber.setAttribute('min', inputData.options.min);
+                
+                if(inputData.options && 'max' in inputData.options)
+                    inputNumber.setAttribute('max', inputData.options.max);
 
                 if(inputData.initial_value)
                     inputNumber.setAttribute('value', inputData.initial_value);
