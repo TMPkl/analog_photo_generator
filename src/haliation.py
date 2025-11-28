@@ -1,19 +1,10 @@
-'''
-    TO DO:
-    - color of light sources detection based on the color temperature
-    - haliation can not be stronger than the light
-    - haliation should not be present on the light source itself
-    - better haliation map generation (make it automatic parameters based on light density on the histogram)
-
-'''
-
-
 import cv2 as cv
 import numpy as np
 import os
 import argparse
+import json
 
-OUTPUT_DIR = "../media/tests/haliation/output/"
+OUTPUT_DIR = "media/tests/pipline/"
 
 
 def light_source_detection_hsv(HSVimg: np.ndarray, bright_threshold: int = 200) -> np.ndarray: #input HSV image space -> output HSV image space 
@@ -55,16 +46,40 @@ def add_heliation_effect(image: np.ndarray, haliation_map: np.ndarray, intensity
         haliated_image[:, :, channel] = cv.addWeighted(image[:, :, channel], 1.0, haliation_map[:, :, channel], intensity, 0)
     
     cv.imwrite(OUTPUT_DIR + "final_output.jpg", haliated_image)
-    print(f"Haliated image saved to: {OUTPUT_DIR + 'final_output.jpg'})")
     return haliated_image
         
 if __name__ == "__main__":
-    print("------- Light Source Detection -------\n")
-    input_img_pth = "../media/tests/haliation/robert-tudor.jpg"
-    img_HSV = cv.cvtColor(cv.imread(input_img_pth), cv.COLOR_BGR2HSV_FULL)
-    
-    ls = light_source_detection_hsv(img_HSV, bright_threshold=195)
-    hm = haliation_map_generator(ls, kernel_size=81, sigmaX=50, delta_mode=False) 
-    h_img = add_heliation_effect(cv.imread(input_img_pth), hm, intensity=1)
-    print("------- Process Finished -------\n")
+    parser = argparse.ArgumentParser(description="Detect bright light sources and add haliation (halo) effect")
+    parser.add_argument("input", help="Input image path")
+    parser.add_argument("output", nargs="?", default="media/tests/pipline/final_output.jpg", help="Output image path")
+    parser.add_argument("--bright_threshold", type=int, default=243, help="Threshold for bright light detection (0-255)")
+    parser.add_argument("--kernel_size", type=int, default=55, help="Gaussian kernel size for haliation map")
+    parser.add_argument("--sigmaX", type=int, default=40, help="Gaussian sigmaX for haliation map")
+    parser.add_argument("--delta_mode", action="store_true", help="Use delta mode for haliation map generation")
+    parser.add_argument("--intensity", type=float, default=0.1, help="Intensity of haliation effect")
+
+    args = parser.parse_args()
+
+    # prepare output directory and set global OUTPUT_DIR (functions use this global)
+    abs_output = os.path.abspath(args.output)
+    out_dir = os.path.dirname(abs_output)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+    # ensure trailing slash used by functions
+    globals()["OUTPUT_DIR"] = out_dir + os.sep
+
+    img = cv.imread(args.input)
+    if img is None:
+        raise FileNotFoundError(f"No input file was found: {args.input}")
+
+    img_HSV = cv.cvtColor(img, cv.COLOR_BGR2HSV_FULL)
+
+    ls = light_source_detection_hsv(img_HSV, bright_threshold=args.bright_threshold)
+    hm = haliation_map_generator(ls, kernel_size=args.kernel_size, sigmaX=args.sigmaX, delta_mode=args.delta_mode)
+    _ = add_heliation_effect(cv.imread(args.input), hm, intensity=args.intensity)
+
+    # final file written by add_heliation_effect is OUTPUT_DIR + 'final_output.jpg'
+    final_path = os.path.join(globals()["OUTPUT_DIR"], "final_output.jpg")
+    result = {"filename": os.path.basename(final_path)}
+    print(json.dumps(result))
 

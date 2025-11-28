@@ -6,3 +6,5 @@ test.py
 *.vscode
 
 !media/tests/
+*/__pycache__/
+*.log

@@ -1,94 +1,102 @@
-from lib.myFilm import BGR2XYZ, XYZ2BGR
+import argparse
+import os
+import json
+import re
 import cv2 as cv
 import numpy as np
 
-
-def create_noise_img(grain_size=-1.2, grain_strenght=0.02, save_steps =False):
-    img = cv.imread('media/tests/esa.jpg', cv.IMREAD_GRAYSCALE) ### for test purposes only, need the dimensions of img
-
-    grain_random = np.random.normal(128, 2, img.shape) # mapa szumu, srednio 128 szum jest std=8+ grain_strenght
-    grain_random_n = cv.normalize(grain_random, None, 0, 255, cv.NORM_MINMAX).astype(np.uint8) # normalizujemy do 0-255
-    if save_steps:
-        cv.imwrite('media/tests/grain/grain_map_1.jpg', grain_random_n)
-
-    kernel = np.array([[1, 1, 1],
-                       [1, -8+grain_size, 1],
-                       [1, 1, 1]], dtype=np.float16)
-    
-
-
-    grain_map = cv.filter2D(grain_random_n, -1, kernel)
-
-    grain_map = cv.normalize(grain_map, None, 0, 255, cv.NORM_MINMAX).astype(np.uint8)        
-    
-    out = np.where(grain_map == 0, 127, grain_map * grain_random*grain_strenght).astype(np.uint8)
-    out = cv.GaussianBlur(out, (3, 3), 0)
-    if save_steps:
-        cv.imwrite('media/tests/grain/photo_grain.jpg', out)
-
-    out = cv.normalize(out, None, 0,1,cv.NORM_MINMAX).astype(np.float32)
-    return out
-
-
-def normalize_to_target_color(img, target_color=(128, 128, 128)):
-    img = img.astype(np.float32)
-    mean_color = np.mean(img, axis=(0, 1), keepdims=True)
-
-    img_out = img - mean_color + np.array(target_color, dtype=np.float32)
-    img_out = np.clip(img_out, 0, 255)
-    return img_out.astype(np.uint8)
-
-def desaturate_img(img, factor=0.5): ##input BGR image
+def add_multiscale_grain(image, scales=(1, 0.2, 0.4, ), intensity=0.4, grain_amplitude=0.18):
     """
-    Zmniejsza nasycenie kolorów w obrazie.
-    factor = 1.0 -> brak zmian
-    factor = 0.0 -> całkowita desaturacja (czarno-białe)
+    multiscale grain, input in HLS color space
     """
-    hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV).astype(np.float32)
-    h, s, v = cv.split(hsv)
+    if image.dtype != np.float32:
+        image = image.astype(np.float32) / 255.1
 
-    s *= factor  # zmniejsz nasycenie
-    s = np.clip(s, 0, 255)
+    h, w, c = image.shape
+    total_noise = np.zeros((h, w, c), dtype=np.float32)
 
-    hsv = cv.merge([h, s, v]).astype(np.uint8)
-    out = cv.cvtColor(hsv, cv.COLOR_HSV2BGR)
-    return out
+    for scale in scales:
+        nh, nw = int(h * scale), int(w * scale)
+        noise = np.random.normal(0, grain_amplitude, (nh, nw, c)).astype(np.float32)
+        noise = cv.resize(noise, (w, h), interpolation=cv.INTER_CUBIC)
+        total_noise += noise
 
-def three_channel_grain_img():
-    out = XYZ2BGR(cv.merge([create_noise_img(), create_noise_img(), create_noise_img()]))
-    return out
+    total_noise /= len(scales)
+    total_noise = cv.GaussianBlur(total_noise, (3, 3), 0)
+    cv.imwrite("media/tests/grain/esa_multiscale_noise.jpg", cv.cvtColor((total_noise * 255).astype(np.uint8), cv.COLOR_HLS2BGR_FULL))
+
+    chanel_scale = np.array([0.2, 0.6, 2.3], dtype=np.float32).reshape(1, 1, 3) ##hardcoded but it makes the most sense, different values do not look good
+    total_noise *= chanel_scale
+
+
+    blended = cv.addWeighted(image, 1.0, total_noise, intensity, 0)
+    blended = np.clip(blended, 0, 1)
+
+    return (blended * 255).astype(np.uint8)
+
+
+class Scales:
+    def __init__(self, values):
+        self.values = tuple(float(v) for v in values)
+
+    @classmethod
+    def from_string(cls, s: str):
+        # split by commas and/or whitespace
+        parts = [p for p in re.split(r"[,\s]+", s.strip()) if p != ""]
+        return cls(parts)
+
+    def __iter__(self):
+        return iter(self.values)
+
+    def __len__(self):
+        return len(self.values)
+
+    def __repr__(self):
+        return f"Scales({self.values})"
+
 
 if __name__ == "__main__":
-    #img = cv.imread('media/tests/c.jpg')
-    #img = BGR2XYZ(img)
+    parser = argparse.ArgumentParser(description="Add multiscale grain to an image (expects BGR input). The script converts to HLS, adds grain and saves output.")
+    parser.add_argument("-input", help="Input image path")
+    parser.add_argument("-output", nargs="?", default="media/tests/grainy.jpg", help="Output image path")
+    # Example usages:
+    # --scale 1 0.2 0.4
+    # --scale "1, 0.2, 0.4"
+    # Also accepts a single comma/space-separated string for backward compatibility.
+    parser.add_argument("--scale", nargs='+', default="1 0.2 0.4", help="Scales for multiscale noise: eg. '1 0.2 0.4' or '1,0.2,0.4'")
+    parser.add_argument("--intensity", type=float, default=0.4, help="Blend intensity for the grain")
+    parser.add_argument("--grain_amplitude", type=float, default=0.18, help="Standard deviation for gaussian noise at each scale")
 
-    noise = three_channel_grain_img()
-    cv.imwrite('media/tests/grain/photo_grain_3ch_raw.jpg', noise)
-    
-    noise = normalize_to_target_color(noise, target_color=(128,128,128))
-    cv.imwrite('media/tests/grain/photo_grain_3ch_normalized.jpg', noise)
+    args = parser.parse_args()
 
-    noise = cv.GaussianBlur(noise, (15, 15), 15)
-    cv.imwrite('media/tests/grain/photo_grain_3ch_blurred.jpg', noise)
+    img = cv.imread(args.input)
+    if img is None:
+        raise FileNotFoundError(f"No input file was found: {args.input}")
 
-    noise = desaturate_img(noise, factor=0.25)
-    cv.imwrite('media/tests/grain/photo_grain_3ch_desaturated.jpg', noise)
-    print("------------------------------------------")
+    # convert to HLS as function expects HLS input
+    img_hls = cv.cvtColor(img, cv.COLOR_BGR2HLS_FULL)
 
-    esa_orginal = cv.imread('media/tests/esa.jpg')
-    esa_with_grain = cv.addWeighted(esa_orginal.astype(np.float32), 1.0, noise.astype(np.float32), 0.3, 0)
-    cv.imwrite('media/tests/grain/esa_with_grain.jpg', esa_with_grain.astype(np.uint8))
+    # parse scales: support both a list of values (unquoted usage) and a single string
+    if isinstance(args.scale, str):
+        scales_obj = Scales.from_string(args.scale)
+    else:
+        # argparse will produce a list when nargs='+' is used; ensure floats
+        scales_obj = Scales(args.scale)
+    multiscale_grainy_img = add_multiscale_grain(img_hls, scales=scales_obj, intensity=args.intensity, grain_amplitude=args.grain_amplitude)
 
+    # convert back to BGR for saving
+    saved = cv.cvtColor(multiscale_grainy_img, cv.COLOR_HLS2BGR_FULL)
 
-    create_noise_img()
+    abs_output = os.path.abspath(args.output)
+    out_dir = os.path.dirname(abs_output)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
 
-    # img = img.astype(np.float32) / 255.0
+    ok = cv.imwrite(abs_output, saved)
+    if not ok:
+        raise IOError(f"Failed to save file: {abs_output}")
 
-    # # Tworzenie szumu (ziarna)
-    # noise = np.random.normal(0, 0.05, img.shape)  # std=0.05 -> siła ziarna
-
-    # # Dodanie szumu i przycięcie zakresu do 0–1
-    # grainy = np.clip(img + noise, 0, 1)
-
-    # # Zapis do pliku
-    # cv.imwrite('media/tests/grain/photo_grain.jpg', (grainy * 255).astype(np.uint8))
+    result = {
+        "filename": os.path.basename(abs_output),
+    }
+    print(json.dumps(result))
