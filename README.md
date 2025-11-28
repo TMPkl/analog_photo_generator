@@ -6,6 +6,10 @@ This project allows you to create analog-style photos from digital images using 
 
 - Convert digital photos to analog-style images
 - Adjustable parameters
+## pipelines
+
+![alt text](media/readme/nb.png "Pipeline overview")
+
 ## Installation
 
 Before running the project, ensure you have Python installed on your system. Then, install the required dependencies using pip:
