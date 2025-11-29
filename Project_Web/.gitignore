@@ -13,3 +13,7 @@ detectron2.egg-info
 detectron2
 wwwroot/output_*/
 
+
+*/__pycache__/**
+
+*.pyc

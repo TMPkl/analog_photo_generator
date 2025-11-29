@@ -87,8 +87,7 @@ def main():
     working_directory = Path(os.getcwd())
     parser = argparse.ArgumentParser(description='Run LAB analog transform on image(s).')
     parser.add_argument('input_path', help='Input image file or folder')
-    parser.add_argument('--checkpoint', '-c', default=working_directory.joinpath('GAN_models','best_checkpoint_LAB_e4.pth'), help='Path to checkpoint (default: best_checkpoint_LAB_e4.pth)')
-    parser.add_argument('--output', '-o', default=None, help='Output folder (default: wwwroot/output_GAN_LAB)')
+    parser.add_argument('--checkpoint', '-c', default=working_directory.joinpath('PythonScripts', 'GAN_models','best_checkpoint_LAB_e5.pth'), help='Path to checkpoint (default: best_checkpoint_LAB_e4.pth)')
     args = parser.parse_args()
 
     checkpoint_path = Path(args.checkpoint)
@@ -97,15 +96,14 @@ def main():
 
     model = load_model_from_checkpoint(checkpoint_path, device)
 
-    if args.output:
-        output_dir = Path(args.output)
-    else:
-        output_dir = working_directory.joinpath('wwwroot', 'output_GAN_LAB')
+    
+    output_dir = working_directory.joinpath('wwwroot', 'output_gan_lab')
     output_dir.mkdir(parents=True, exist_ok=True)
 
     input_path = Path(args.input_path)
 
     processed = []
+    # Better not be part 2
     if input_path.is_dir():
         exts = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif')
         files = [p for p in sorted(input_path.iterdir()) if p.suffix.lower() in exts]

@@ -141,7 +141,29 @@ const TOOL_INPUTS_CONFIG =
                 flag: "--intensity",
             },
             
+        ],
+        3:
+        [
+            {
+                name: "tool_input_lut",
+                label: "LUT file to use",
+                type: "select",
+                options: {
+                    "Reinhard all dataset": "1",
+                    "OT color transfer form ": "2",
+                },
+                flag: "--lut",
+            },
         ]
+        // 4: [
+        //     {
+        //         name: 'tool_input_color_space',
+        //         label: 'Resulting color space',
+        //         type: 'select',
+        //         options: {"Gray": "GRAY", "HSV": "HSV", "RGB": "BGR"},
+        //         flag: "",
+        //     }
+        // ],
         // 2: [
         //     {
         //         name: 'tool_input_color_space',

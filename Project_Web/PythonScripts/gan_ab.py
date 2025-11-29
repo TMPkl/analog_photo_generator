@@ -90,7 +90,7 @@ def main():
     working_directory = Path(os.getcwd())
     parser = argparse.ArgumentParser(description='Run AB analog transform on image(s).')
     parser.add_argument('input_path', help='Input image file or folder')
-    parser.add_argument('--checkpoint', '-c', default=working_directory.joinpath('GAN_models','best_checkpoint_AB_e4.pth'), help='Path to checkpoint (default: best_checkpoint_AB_e4.pth)')
+    parser.add_argument('--checkpoint', '-c', default=working_directory.joinpath('PythonScripts', 'GAN_models','best_checkpoint_AB_e4.pth'), help='Path to checkpoint (default: best_checkpoint_AB_e4.pth)')
     args = parser.parse_args()
 
     # default checkpoint relative to script working directory
@@ -101,12 +101,13 @@ def main():
     # load model
     model = load_model_from_checkpoint(checkpoint_path, device)
 
-    output_dir = working_directory.joinpath('wwwroot', 'output_GAN_AB')
+    output_dir = working_directory.joinpath('wwwroot', 'output_gan_ab')
     output_dir.mkdir(parents=True, exist_ok=True)
 
     input_path = Path(args.input_path)
 
     processed = []
+    # It better not be
     if input_path.is_dir():
         exts = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif', '.JPG', '.JPEG', '.PNG', '.BMP', '.TIFF', '.TIF')
         files = [p for p in sorted(input_path.iterdir()) if p.suffix.lower() in exts]
