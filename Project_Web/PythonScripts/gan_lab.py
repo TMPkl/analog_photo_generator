@@ -87,7 +87,7 @@ def main():
     working_directory = Path(os.getcwd())
     parser = argparse.ArgumentParser(description='Run LAB analog transform on image(s).')
     parser.add_argument('input_path', help='Input image file or folder')
-    parser.add_argument('--checkpoint', '-c', default=working_directory.joinpath('PythonScripts', 'GAN_models','best_checkpoint_LAB_e4.pth'), help='Path to checkpoint (default: best_checkpoint_LAB_e4.pth)')
+    parser.add_argument('--checkpoint', '-c', default=working_directory.joinpath('PythonScripts', 'GAN_models','best_checkpoint_LAB_e5.pth'), help='Path to checkpoint (default: best_checkpoint_LAB_e4.pth)')
     args = parser.parse_args()
 
     checkpoint_path = Path(args.checkpoint)
