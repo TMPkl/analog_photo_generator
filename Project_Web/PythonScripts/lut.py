@@ -139,7 +139,8 @@ def main():
 	output_path = (folder_name + '/' + os.path.basename(image_path).split('.')[0] + ".png")
     
 	lut_path = os.path.join(working_directory, 'PythonScripts')
-	lut_path = os.path.join(lut_path, 'lut_file.cube')
+	lut_path = os.path.join(lut_path, 'LUT_files')
+	lut_path = os.path.join(lut_path, 'LUT2.cube')
 
 	lut_path = Path(lut_path)
 

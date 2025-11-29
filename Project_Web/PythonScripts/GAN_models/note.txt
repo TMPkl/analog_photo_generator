@@ -1,0 +1,5 @@
+best_checkpoint_AB_e4.pth Best model saved at epoch 20 with Loss_G: 1.7347 USE THIS
+best_checkpoint_AB_e5.pth Best model saved at epoch 20 with Loss_G: 2.0184
+
+best_checkpoint_LAB_e4.pth Best model saved at epoch 1 with Loss_G: 11.5454
+best_checkpoint_LAB_e5.pth Best model saved at epoch 3 with Loss_G: 8.1172 USE THIS
