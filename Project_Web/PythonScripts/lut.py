@@ -133,15 +133,25 @@ def main():
 
 	parser = argparse.ArgumentParser(description='Apply 3D Look-Up Table (LUT) to an image for an analog effect.')
 	parser.add_argument('input_path', help='Input image or folder')
+	parser.add_argument('--lut', default=1, help='Index of LUT to apply (default: 1)')
 	args = parser.parse_args()
 
+	lut_files = {
+		1: os.path.join(working_directory, "PythonScripts", "LUT_files", "LUT1.cube"),
+		2: os.path.join(working_directory, "PythonScripts", "LUT_files", "LUT2.cube")
+	}
+
+	lut_choice = int(args.lut)
+	if lut_choice not in lut_files.keys():
+		raise ValueError('LUT index must be 1 or 2')
+		return
+
+	lut_path = lut_files[lut_choice]
+	
+	# parse input image
 	image_path = args.input_path
 	output_path = (folder_name + '/' + os.path.basename(image_path).split('.')[0] + ".png")
     
-	lut_path = os.path.join(working_directory, 'PythonScripts')
-	lut_path = os.path.join(lut_path, 'LUT_files')
-	lut_path = os.path.join(lut_path, 'LUT2.cube')
-
 	lut_path = Path(lut_path)
 
 	lut = parse_cube(lut_path)
