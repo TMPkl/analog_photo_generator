@@ -15,6 +15,7 @@ public static class DbSeeder
         {
             new ImageTool { Name = "Grain Generator", Description = "Add multiscale grain to an image (expects BGR input). The script converts to HLS, adds grain and saves output.", ScriptPath = "PythonScripts/grain.py" },
             new ImageTool { Name = "Halation Generator", Description = "Detect bright light sources and add halation (halo) effect.", ScriptPath = "PythonScripts/haliation.py" },
+            new ImageTool { Name = "Apply Look-Up Table", Description = "Apply 3D Look-Up Table (LUT) to an image for an analog effect.", ScriptPath = "PythonScripts/lut.py" },
 
         };
 

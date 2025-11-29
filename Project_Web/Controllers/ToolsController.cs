@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -135,10 +136,15 @@ public class ToolsController : Controller
         {
             process.Start();
 
-            var output = await process.StandardOutput.ReadToEndAsync();
-            var error = await process.StandardError.ReadToEndAsync();
+            var outputTask = process.StandardOutput.ReadToEndAsync();
+            var errorTask  = process.StandardError.ReadToEndAsync();
+            var waitTask   = process.WaitForExitAsync(); 
 
-            process.WaitForExit();
+            await Task.WhenAll(outputTask, errorTask, waitTask);
+
+            var output = await outputTask;
+            var error  = await errorTask;
+            
 
             if (process.ExitCode != 0)
             {
