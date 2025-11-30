@@ -150,7 +150,7 @@ def main():
 	
 	# parse input image
 	image_path = args.input_path
-	output_path = (folder_name + '/' + os.path.basename(image_path).split('.')[0] + ".png")
+	output_path = (folder_name + '/' + os.path.basename(image_path).split('.')[0] + "_" + str(lut_choice) + ".png")
     
 	lut_path = Path(lut_path)
 

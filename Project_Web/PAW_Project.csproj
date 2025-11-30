@@ -91,6 +91,14 @@
       <_ContentIncludedByDefault Remove="wwwroot\output_text_recognition\f25da102-7af5-4acd-8c33-408a85af5d70.png" />
       <_ContentIncludedByDefault Remove="wwwroot\output_text_recognition\fabd1c08-a286-4f97-a9d3-016ee28393a8.png" />
       <_ContentIncludedByDefault Remove="wwwroot\output_text_recognition\fc5db39c-3fb7-46dd-9746-cee45bd8fc7d.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\output_pipeline_gan\8e43320a-ce05-4885-8d3b-3890c6c4587a_1-0.2-0.4_0.4_0.18.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\output_pipeline_gan\f790c721-b17d-44b5-be2d-638cd0579308_1-0.2-0.4_0.48_0.5.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\output_pipeline_gan\f790c721-b17d-44b5-be2d-638cd0579308_1-0.2-0.4_0.4_0.18.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\lut\0b85a96b-6ebe-4b96-86b6-19a816c007b7.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\output_pipeline_lut\8e43320a-ce05-4885-8d3b-3890c6c4587a_1-0.2-0.4_0.4_0.18.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\output_haliation\8e43320a-ce05-4885-8d3b-3890c6c4587a_243_55_40_0_0.1.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\output_haliation\f790c721-b17d-44b5-be2d-638cd0579308_235_55_40_1_0.5.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\output_haliation\f790c721-b17d-44b5-be2d-638cd0579308_243_55_40_1_0.1.png" />
     </ItemGroup>
 
 </Project>

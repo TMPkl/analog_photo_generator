@@ -154,7 +154,155 @@ const TOOL_INPUTS_CONFIG =
                 },
                 flag: "--lut",
             },
-        ]
+        ],
+        6:
+        [
+            {
+                name: "tool_input_gan_model",
+                label: "GAN Model to use",
+                type: "select",
+                options: {
+                    "AB": "AB",
+                    "LAB": "LAB"
+                },
+                flag: "--model"
+            },
+            {
+                name: 'tool_input_bright_threshold',
+                label: '(Halation) Brightness Threshold (0-255)',
+                type: 'number',
+                options: {'min': 0, 'max': 255},
+                initial_value: 243,
+                flag: "--bright_threshold",
+            },
+            {
+                name: 'tool_input_kernel_size',
+                label: '(Halation) Map Kernel Size',
+                type: 'number',
+                options: {'min': 0},
+                initial_value: 55,
+                flag: "--kernel_size",
+            },
+            {
+                name: 'tool_input_sigma_x',
+                label: '(Halation) Map Sigma X',
+                type: 'number',
+                options: {'min': 0},
+                initial_value: 40,
+                flag: "--sigma_x",
+            },
+            {
+                name: 'tool_input_delta_mode',
+                label: '(Halation) Map Delta Mode',
+                type: 'select',
+                options: {'Yes': 1, "No": 0},
+                flag: "--delta_mode",
+            },
+            {
+                name: 'tool_input_halation_intensity',
+                label: '(Halation) Intensity',
+                type: 'number',
+                options: {'min': 0},
+                initial_value: 0.1,
+                flag: "--haliation_intensity",
+            },
+            {
+                name: 'tool_input_scales',
+                label: 'Noise Scales (space-separated floats)',
+                initial_value: '1 0.2 0.4',
+                type: 'text',
+                flag: '--scale'
+            },
+            {
+                name: 'tool_input_grain_intensity',
+                label: '(Grain) Intensity (float)',
+                initial_value: 0.4,
+                type: 'number',
+                flag: '--grain_intensity'
+            },
+            {
+                name: 'tool_input_grain_amplitude',
+                label: '(Grain) Amplitude (float)',
+                initial_value: 0.18,
+                type: 'number',
+                flag: '--grain_amplitude'
+            }
+            
+        ],
+        7:
+            [
+                {
+                    name: "tool_input_lut",
+                    label: "LUT file to use",
+                    type: "select",
+                    options: {
+                        "Reinhard all dataset": "1",
+                        "OT color transfer form ": "2",
+                    },
+                    flag: "--lut",
+                },
+                {
+                    name: 'tool_input_bright_threshold',
+                    label: '(Halation) Brightness Threshold (0-255)',
+                    type: 'number',
+                    options: {'min': 0, 'max': 255},
+                    initial_value: 243,
+                    flag: "--bright_threshold",
+                },
+                {
+                    name: 'tool_input_kernel_size',
+                    label: '(Halation) Map Kernel Size',
+                    type: 'number',
+                    options: {'min': 0},
+                    initial_value: 55,
+                    flag: "--kernel_size",
+                },
+                {
+                    name: 'tool_input_sigma_x',
+                    label: '(Halation) Map Sigma X',
+                    type: 'number',
+                    options: {'min': 0},
+                    initial_value: 40,
+                    flag: "--sigma_x",
+                },
+                {
+                    name: 'tool_input_delta_mode',
+                    label: '(Halation) Map Delta Mode',
+                    type: 'select',
+                    options: {'Yes': 1, "No": 0},
+                    flag: "--delta_mode",
+                },
+                {
+                    name: 'tool_input_halation_intensity',
+                    label: '(Halation) Intensity',
+                    type: 'number',
+                    options: {'min': 0},
+                    initial_value: 0.1,
+                    flag: "--haliation_intensity",
+                },
+                {
+                    name: 'tool_input_scales',
+                    label: 'Noise Scales (space-separated floats)',
+                    initial_value: '1 0.2 0.4',
+                    type: 'text',
+                    flag: '--scale'
+                },
+                {
+                    name: 'tool_input_grain_intensity',
+                    label: '(Grain) Intensity (float)',
+                    initial_value: 0.4,
+                    type: 'number',
+                    flag: '--grain_intensity'
+                },
+                {
+                    name: 'tool_input_grain_amplitude',
+                    label: '(Grain) Amplitude (float)',
+                    initial_value: 0.18,
+                    type: 'number',
+                    flag: '--grain_amplitude'
+                }
+
+            ]
         // 4: [
         //     {
         //         name: 'tool_input_color_space',

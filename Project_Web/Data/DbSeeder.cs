@@ -18,7 +18,9 @@ public static class DbSeeder
             new ImageTool { Name = "Apply Look-Up Table", Description = "Apply 3D Look-Up Table (LUT) to an image for an analog effect.", ScriptPath = "PythonScripts/lut.py" },
             new ImageTool { Name = "Apply AB Transform", Description = "Run AB analog transform using Generative Adversarial Networks.", ScriptPath = "PythonScripts/gan_ab.py" },
             new ImageTool { Name = "Apply LAB Transform", Description = "Run LAB analog transform using Generative Adversarial Networks.", ScriptPath = "PythonScripts/gan_lab.py" },
-
+            new ImageTool { Name = "GAN Analog Pipeline", Description = "Run a pipeline that runs a GAN model, then adds halation and grain to the image.", ScriptPath = "PythonScripts/pipeline_gan.py" },
+            new ImageTool { Name = "LUT Analog Pipeline", Description = "Run a pipeline that runs a LUT transform, then adds halation and grain to the image.", ScriptPath = "PythonScripts/pipeline_lut.py" }
+            
         };
 
         foreach (var tool in toolsToSeed)
