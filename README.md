@@ -2,6 +2,10 @@
 
 Computer-vision toolkit for generating analog film aesthetics from digital photos. The project ships practical, composable tools (3D LUT application, halation/halo glow, multi-scale film grain, and two GAN-based transforms: AB and LAB) plus ready-to-use pipelines that chain them. A minimal web app exists only as a convenience UI; this README focuses on the CV tools. For the web app, see `Project_Web/README.md`.
 
+## Presentation
+
+This project was presented for the course Computer Vision at Sapienza University of Rome. The presentation slides can be found [here](https://www.canva.com/design/DAG5KI0-7gY/4ABQWTeXh79KLcTR8c9ZbA/edit?utm_content=DAG5KI0-7gY&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton).
+
 ## How It Works
 
 - Modular image operators written in Python (OpenCV + NumPy + Pillow) operating mostly in RGB/BGR or HLS/HSV color spaces.
