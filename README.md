@@ -100,5 +100,5 @@ Outputs are written under `Project_Web/wwwroot/output_*` and the tool prints a J
 
 —
 
-Photo (`media/tests/p2.jpg`) by Ehsan Ahmadi on Unsplash.
-
+- Photo (`media/tests/p2.jpg`) by Ehsan Ahmadi on Unsplash.
+- Photo (`media/tests/haliation/robert-tutor.jpg`) by <a href="https://unsplash.com/@ashkya?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Robert Tudor</a> on <a href="https://unsplash.com/photos/train-station--8x6Ffud7Bk?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
