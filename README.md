@@ -32,6 +32,7 @@ Computer-vision toolkit for generating analog film aesthetics from digital photo
 	- Loads pre-trained checkpoints from `PythonScripts/GAN_models/` and produces a stylized output.
 	- Intended as a learned “film stock look” step that can precede halation/grain.
 	- Outputs to `wwwroot/output_GAN_AB` or `wwwroot/output_GAN_LAB`.
+	- Developed originally in: https://github.com/Szymon-Stasiak/cycle-gan-for-generating-analog-photo-color. This repository only carries the minimum files and dependencies needed to run inference.
 
 ## Pipelines
 
